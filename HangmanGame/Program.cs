@@ -5,63 +5,40 @@
 
         static void Main(string[] args)
         {
+            Graphics.HangmanPrinter(7);
+            string randomWord = Tools.RandomWordGenerator();
 
-            Console.WriteLine("   +-----+\n   |     |\n   O     |\n  /|\\    |\n  / \\    |\n         |\n         |\n         |\n===========");
-
-            List<string> wordList = new List<string>();
-            wordList.Add("whale");
-            wordList.Add("panther");
-            wordList.Add("tiger");
-            wordList.Add("giraffe");
-            wordList.Add("penguin");
-            wordList.Add("bear");
-            wordList.Add("snake");
-            wordList.Add("poodle");
-            wordList.Add("alligator");
-            Random random = new Random();
-            int index = random.Next(wordList.Count);
-            string randomWord = wordList[index];
-
-
-            foreach (char letter in randomWord)
+            for (int i = 0; i < randomWord.Length; i++)
             {
-                
                 Console.Write("_ ");
             }
 
             int lenghtOfSecretWord = randomWord.Length;
-            int incorrectGuesses = 0;
+            int incorrectGuesses = 0; // ++ later in code
             List<char> currentLettersGuessed = new List<char>();
             int currentLettersRight = 0;
 
             while (incorrectGuesses != 7 && currentLettersRight != lenghtOfSecretWord)
             {
-                
-                Console.SetCursorPosition(18, 1); Console.WriteLine("Welcome to Hangman");
-                Console.SetCursorPosition(18, 3); Console.WriteLine("Rules:");
-                Console.SetCursorPosition(18, 4); Console.WriteLine("You can only type in letters.");
-                Console.SetCursorPosition(18, 5); Console.WriteLine("You can only guess one letter at a time.");
-                Console.SetCursorPosition(18, 6); Console.WriteLine("You have 7 lives. Lose them all and you lose!\n");
-                
+                Graphics.WelcomeTextPrinter();
+
                 Console.Write($"\n\nLetters Guessed:");
-                foreach  (char letter in currentLettersGuessed)
+                foreach (char letter in currentLettersGuessed)
                 {
-                    Console.Write(char.ToUpper(letter) + " "); ;
+                    Console.Write(char.ToUpper(letter) + " ");
                 }
 
                 // User input
                 Console.Write("\n\nGuess a letter: ");
-                char letterGuessed = Console.ReadLine()[0];
+                char userInputGuess = Console.ReadKey().KeyChar;
 
                 Console.Clear();
+
                 // Check if letter has already been guessed
-                if (currentLettersGuessed.Contains(letterGuessed))
+                if (currentLettersGuessed.Contains(userInputGuess))
                 {
-                    
-                    HangmanDrawing.PrintHangman(incorrectGuesses);
-                    currentLettersRight = WordPrinter.PrintWord(currentLettersGuessed, randomWord);
- 
-                    
+                    Graphics.HangmanPrinter(incorrectGuesses);
+                    currentLettersRight = Tools.PrintWord(currentLettersGuessed, randomWord);
                     Console.WriteLine("     ERROR! Unable to guess the same letter twice");
                 }
 
@@ -71,31 +48,25 @@
                     bool rightGuess = false;
                     for (int i = 0; i < randomWord.Length; i++)
                     {
-                        if (letterGuessed == randomWord[i])
+                        if (userInputGuess == randomWord[i])
                         {
                             rightGuess = true;
                         }
                     }
 
-
-                    if (rightGuess)
+                    // If true
+                    if (rightGuess == true)
                     {
-                        HangmanDrawing.PrintHangman(incorrectGuesses);
-                        currentLettersGuessed.Add(letterGuessed);
-                        currentLettersRight = WordPrinter.PrintWord(currentLettersGuessed, randomWord);
-                        Console.WriteLine();
-                        
+                        currentLettersGuessed.Add(userInputGuess);
                     }
+
+                    // If rightGuess is not true, add 1 to incorrect guesses variable
                     else
                     {
                         incorrectGuesses++;
-                        currentLettersGuessed.Add(letterGuessed);
-                        HangmanDrawing.PrintHangman(incorrectGuesses);
-                        currentLettersRight = WordPrinter.PrintWord(currentLettersGuessed, randomWord);
-                        Console.WriteLine();
-                        
-
                     }
+                    Graphics.HangmanPrinter(incorrectGuesses);
+                    currentLettersRight = Tools.PrintWord(currentLettersGuessed, randomWord);
 
                     // Losing output
                     if (incorrectGuesses == 7)
@@ -109,22 +80,15 @@
                         int numberOfGuessesLeft = 7 - incorrectGuesses;
                         Console.Write($"\nLives left:  { numberOfGuessesLeft}");
                     }
-                    
+
                     // Victory output
-                    if (incorrectGuesses != 7 && currentLettersRight == lenghtOfSecretWord) 
-                        {
-                        Console.WriteLine("\nCONGRATULATIONS! You win!");
-                        } 
-
+                    if (currentLettersRight == lenghtOfSecretWord)
+                    {
+                        Console.WriteLine("\n\nCONGRATULATIONS! You win!");
+                    }
                 }
-                
-
             }
             Console.WriteLine("\nThanks for playing!");
-
-
-
-
         }
     }
 }
